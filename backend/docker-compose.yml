@@ -1,0 +1,25 @@
+name: uniticket-grupo-3
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: uniticket_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password_seguro
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    ports:
+      - "8083:8000"
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://postgres:password_seguro@db:5432/uniticket_db
+    volumes:
+      - .:/app
+
+volumes:
+  db_data:
