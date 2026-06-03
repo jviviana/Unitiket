@@ -1,35 +1,49 @@
 pipeline {
     agent any
+
     environment {
         IMAGE_NAME = "uniticket-grupo-3"
     }
+
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
+
         stage('Build Image') {
             steps {
                 script {
-                    // El Dockerfile está dentro de la carpeta 'backend', por lo que indicamos esa ruta
                     sh "docker build -t ${IMAGE_NAME}:latest ./backend"
                 }
             }
         }
+
         stage('Análisis Estático') {
             steps {
                 script {
-                    sh "docker run --rm ${IMAGE_NAME} flake8 . --exclude=venv"
+                    // Ejecutamos flake8. Si falla, el pipeline se detiene.
+                    sh "docker run --rm ${IMAGE_NAME} flake8 ."
                 }
             }
         }
+
         stage('Pruebas Unitarias') {
             steps {
                 script {
-                    sh "docker run --rm ${IMAGE_NAME} pytest pruebas/"
+                    // Ejecutamos pytest y generamos un reporte XML compatible con Jenkins
+                    // Usamos un volumen temporal para sacar el reporte del contenedor
+                    sh "docker run --rm -v ${WORKSPACE}/backend:/app ${IMAGE_NAME} pytest --junitxml=nosetests.xml pruebas/"
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            // Publica los resultados de las pruebas en la interfaz de Jenkins
+            junit 'backend/nosetests.xml'
         }
     }
 }

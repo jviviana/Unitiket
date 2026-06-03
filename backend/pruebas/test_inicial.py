@@ -1,10 +1,12 @@
 import pytest
 from django.urls import reverse
 
+
 @pytest.mark.django_db
 def test_ejemplo_basico():
     """Prueba básica para asegurar que el sistema de pruebas funciona."""
     assert 1 + 1 == 2
+
 
 @pytest.mark.django_db
 def test_acceso_home(client):
