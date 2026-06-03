@@ -17,5 +17,19 @@ pipeline {
                 }
             }
         }
+        stage('Análisis Estático') {
+            steps {
+                script {
+                    sh "docker run --rm ${IMAGE_NAME} flake8 . --exclude=venv"
+                }
+            }
+        }
+        stage('Pruebas Unitarias') {
+            steps {
+                script {
+                    sh "docker run --rm ${IMAGE_NAME} pytest pruebas/"
+                }
+            }
+        }
     }
 }
