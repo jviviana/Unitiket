@@ -34,7 +34,7 @@ pipeline {
                 script {
                     // Ejecutamos pytest y generamos un reporte XML compatible con Jenkins
                     // Usamos un volumen temporal para sacar el reporte del contenedor
-                    sh "docker run --rm -v ${WORKSPACE}/backend:/app ${IMAGE_NAME} pytest --junitxml=nosetests.xml pruebas/"
+                    sh "docker run --rm -v ${WORKSPACE}/backend:/app ${IMAGE_NAME} pytest --junitxml=nosetests.xml /app/pruebas/"
                 }
             }
         }
