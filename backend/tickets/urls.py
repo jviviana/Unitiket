@@ -7,7 +7,7 @@ urlpatterns = [
     path('auth/login/', TokenObtainPairView.as_view(), name='auth_login'),
     path('auth/refresh/', TokenRefreshView.as_view(), name='auth_refresh'),
     path('auth/me/', MeView.as_view(), name='auth_me'),
-    
+
     path('tickets/', TicketListCreateView.as_view(), name='ticket_list_create'),
     path('tickets/<int:pk>/', TicketDetailView.as_view(), name='ticket_detail'),
 ]
