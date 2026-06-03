@@ -23,7 +23,7 @@ pipeline {
         stage('Análisis Estático') {
             steps {
                 script {
-                    // Ejecutamos flake8. Si falla, el pipeline se detiene.
+                    // Ejecutamos flake8 directamente sobre la imagen
                     sh "docker run --rm ${IMAGE_NAME} flake8 ."
                 }
             }
@@ -32,9 +32,14 @@ pipeline {
         stage('Pruebas Unitarias') {
             steps {
                 script {
-                    // Ejecutamos pytest y generamos un reporte XML compatible con Jenkins
-                    // Usamos un volumen temporal para sacar el reporte del contenedor
-                    sh "docker run --rm -v ${WORKSPACE}/backend:/app ${IMAGE_NAME} pytest --junitxml=nosetests.xml /app/pruebas/"
+                    // 1. Corremos las pruebas dándole un nombre al contenedor para poder extraer el archivo después
+                    sh "docker run --name test_runner ${IMAGE_NAME} pytest --junitxml=nosetests.xml pruebas/"
+                    
+                    // 2. Copiamos el archivo de resultados desde el contenedor a Jenkins
+                    sh "docker cp test_runner:/app/nosetests.xml ./backend/nosetests.xml"
+                    
+                    // 3. Borramos el contenedor temporal
+                    sh "docker rm test_runner"
                 }
             }
         }
@@ -42,7 +47,7 @@ pipeline {
 
     post {
         always {
-            // Publica resultados si existen, pero no falla si no están
+            // Publica los resultados si el archivo se generó
             junit testResults: 'backend/nosetests.xml', allowEmptyResults: true
         }
     }
