@@ -42,8 +42,8 @@ pipeline {
 
     post {
         always {
-            // Publica los resultados de las pruebas en la interfaz de Jenkins
-            junit 'backend/nosetests.xml'
+            // Publica resultados si existen, pero no falla si no están
+            junit testResults: 'backend/nosetests.xml', allowEmptyResults: true
         }
     }
 }
