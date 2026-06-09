@@ -6,3 +6,6 @@ python-decouple>=3.8
 dj-database-url>=2.1
 psycopg2-binary>=2.9
 Pillow>=10.3
+pytest>=8.0
+pytest-django>=4.8
+flake8>=7.0
