@@ -9,7 +9,6 @@ class User(AbstractUser):
     )
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='student')
 
-
 class Ticket(models.Model):
     STATUS_CHOICES = (
         ('OPEN', 'Abierto'),
