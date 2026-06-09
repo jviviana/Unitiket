@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+
 class User(AbstractUser):
     ROLE_CHOICES = (
         ('student', 'Estudiante/Docente'),
@@ -14,7 +15,7 @@ class Ticket(models.Model):
         ('IN_PROGRESS', 'En Progreso'),
         ('RESOLVED', 'Resuelto'),
     )
-    
+
     reporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tickets')
     location = models.CharField(max_length=100)
     equipment_id = models.CharField(max_length=50)
