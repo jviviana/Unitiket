@@ -17,7 +17,7 @@ pipeline {
         }
         stage('Test Frontend') {
             steps {
-                sh "docker run --rm -v \${WORKSPACE}/frontend:/app -w /app node:18-alpine sh -c 'npm install && npm test'"
+                sh 'docker run --rm -v $WORKSPACE/frontend:/app -w /app node:18-alpine sh -c "npm install && npm test"'
             }
         }
         stage('Build Image') {
