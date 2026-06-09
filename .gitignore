@@ -29,6 +29,11 @@ uploads/
 # Docker
 docker-compose.override.yml
 
+# Node / Frontend
+node_modules/
+package-lock.json
+dist/
+
 # IDEs
 .vscode/
 .idea/
