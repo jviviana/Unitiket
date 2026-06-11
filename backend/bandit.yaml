@@ -1,0 +1,6 @@
+# Configuracion de Bandit (SAST) - UniTicket backend
+# Se excluyen migraciones (autogeneradas) y archivos de pruebas: el codigo de
+# test no se despliega a produccion y sus contrasenas son fixtures, no secretos.
+exclude_dirs:
+  - "/tickets/migrations"
+  - "/pruebas"
