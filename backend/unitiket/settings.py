@@ -3,16 +3,28 @@ Django settings for unitiket project.
 """
 
 from pathlib import Path
-from decouple import config
+from decouple import config, Csv
+from django.core.management.utils import get_random_secret_key
 import dj_database_url
 from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-super-secret-key')
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['*']
+# SECRET_KEY: obligatoria en produccion. En desarrollo (DEBUG=True) se genera
+# una clave efimera para no dejar una clave insegura escrita en el codigo.
+SECRET_KEY = config('SECRET_KEY', default='')
+if not SECRET_KEY:
+    if DEBUG:
+        SECRET_KEY = get_random_secret_key()
+    else:
+        raise RuntimeError(
+            "SECRET_KEY no esta definida. Configurala como variable de entorno en produccion."
+        )
+
+# ALLOWED_HOSTS desde variable de entorno; en produccion se restringe.
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -102,4 +114,27 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS: en desarrollo se permite todo; en produccion se restringe a origenes explicitos.
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    CORS_ALLOW_ALL_ORIGINS = False
+    CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='', cast=Csv())
+
+# --- Endurecimiento de seguridad para produccion ---
+# Las opciones que dependen de TLS/HTTPS se activan con SECURE_HTTPS=True.
+# La infra del curso sirve por HTTP en un puerto, asi que por defecto van en False
+# para no romper el despliegue; se documentan para habilitarlas detras de un proxy con TLS.
+if not DEBUG:
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+
+    SECURE_HTTPS = config('SECURE_HTTPS', default=False, cast=bool)
+    if SECURE_HTTPS:
+        SECURE_SSL_REDIRECT = True
+        SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+        SESSION_COOKIE_SECURE = True
+        CSRF_COOKIE_SECURE = True
+        SECURE_HSTS_SECONDS = 31536000
+        SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+        SECURE_HSTS_PRELOAD = True
