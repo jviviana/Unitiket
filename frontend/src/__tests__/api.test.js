@@ -3,7 +3,7 @@ import api from '../api';
 
 describe('api client', () => {
   it('tiene la baseURL correcta', () => {
-    expect(api.defaults.baseURL).toBe('http://127.0.0.1:8000/api/');
+    expect(api.defaults.baseURL).toBe('/api/');
   });
 
   it('tiene un interceptor de request registrado', () => {
