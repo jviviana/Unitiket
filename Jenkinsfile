@@ -1,10 +1,8 @@
 pipeline {
     agent any
-
     environment {
         IMAGE_NAME = "uniticket-grupo-3"
     }
-
     stages {
         stage('Checkout') {
             steps {
@@ -30,53 +28,48 @@ pipeline {
                 }
             }
         }
-
         stage('Analisis Estatico (Linting)') {
             steps {
                 script {
-                    // flake8: calidad y estilo del codigo
                     sh "docker run --rm ${IMAGE_NAME} flake8 ."
                 }
             }
         }
-
         stage('SAST (Bandit)') {
             steps {
                 script {
-                    // Analisis estatico de seguridad del codigo. Se excluyen los tests
-                    // (codigo no desplegado; sus contrasenas son fixtures, no secretos).
                     sh "docker run --rm ${IMAGE_NAME} bandit -r . -c bandit.yaml -x '*/tests.py,*/test_*.py'"
                 }
             }
         }
-
         stage('SCA (pip-audit)') {
             steps {
                 script {
-                    // Escaneo de vulnerabilidades conocidas (CVE) en las dependencias.
                     sh "docker run --rm ${IMAGE_NAME} pip-audit -r requirements.txt"
                 }
             }
         }
-
         stage('Security Check (Django deploy)') {
             steps {
                 script {
-                    // Chequeo de configuracion de seguridad para despliegue (informativo: no rompe el build).
                     sh "docker run --rm -e DEBUG=False -e SECRET_KEY=ci-temporal-no-usar-en-produccion-0123456789abcdef ${IMAGE_NAME} python manage.py check --deploy || true"
                 }
             }
         }
-
         stage('Pruebas Unitarias') {
             steps {
                 script {
-                    // 1. Corremos las pruebas con nombre para extraer el reporte despues
                     sh "docker run --name test_runner -e DEBUG=True ${IMAGE_NAME} pytest --junitxml=nosetests.xml pruebas/"
-                    // 2. Copiamos el archivo de resultados desde el contenedor a Jenkins
                     sh "docker cp test_runner:/app/nosetests.xml ./backend/nosetests.xml"
-                    // 3. Borramos el contenedor temporal
                     sh "docker rm test_runner"
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                script {
+                    sh "docker-compose -p uniticket-grupo-3 down || true"
+                    sh "docker-compose up -d --build"
                 }
             }
         }
