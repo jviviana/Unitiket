@@ -40,3 +40,9 @@ dist/
 *.swp
 *.swo
 .DS_Store
+
+# Cobertura de codigo
+.coverage
+coverage.xml
+coverage_html/
+htmlcov/
