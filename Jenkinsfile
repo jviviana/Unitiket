@@ -83,6 +83,7 @@ POSTGRES_USER=\${POSTGRES_USER}
 POSTGRES_PASSWORD=\${POSTGRES_PASSWORD}
 SECRET_KEY=\${SECRET_KEY}
 DEBUG=False
+ALLOWED_HOSTS=45.55.145.98,localhost,127.0.0.1
 EOF
                         """
                         sh "docker compose -f ./backend/docker-compose.yml --project-directory ./backend -p uniticket-grupo-3 down || true"
