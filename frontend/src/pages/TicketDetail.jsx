@@ -76,7 +76,7 @@ function TicketDetail() {
         <p>{ticket.description}</p>
       </div>
 
-      {user?.role === 'student' && ticket.resolution_comment && (
+      {user?.role !== 'technician' && ticket.resolution_comment && (
         <div style={{backgroundColor: '#ecfdf5', padding: '1rem', borderRadius: '8px', border: '1px solid var(--success-color)'}}>
           <strong>Comentario de Resolución:</strong>
           <p>{ticket.resolution_comment}</p>
