@@ -11,6 +11,7 @@ pipeline {
         }
         stage('Test Backend (con cobertura)') {
             steps {
+                sh "docker rm -f cov_runner || true"
                 sh "docker build -t ${IMAGE_NAME}:test ./backend"
                 sh "docker run --name cov_runner -e DEBUG=True ${IMAGE_NAME}:test sh -c 'coverage run manage.py test tickets --verbosity=2 && coverage report && coverage xml -o coverage.xml'"
                 sh "docker cp cov_runner:/app/coverage.xml ./backend/coverage.xml"
@@ -61,6 +62,7 @@ pipeline {
         stage('Pruebas Unitarias') {
             steps {
                 script {
+                    sh "docker rm -f test_runner || true"
                     sh "docker run --name test_runner -e DEBUG=True ${IMAGE_NAME} pytest --junitxml=nosetests.xml pruebas/"
                     sh "docker cp test_runner:/app/nosetests.xml ./backend/nosetests.xml"
                     sh "docker rm test_runner"
