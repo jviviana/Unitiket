@@ -49,10 +49,10 @@ function Dashboard() {
     <div>
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem'}}>
         <h2>Tablero de Control</h2>
-        <span style={{color: 'var(--text-secondary)'}}>Hola, {user?.username} ({user?.role === 'technician' ? 'Técnico' : 'Estudiante'})</span>
+        <span style={{color: 'var(--text-secondary)'}}>Hola, {user?.username} ({user?.role === 'technician' ? 'Técnico' : user?.role === 'teacher' ? 'Docente' : 'Estudiante'})</span>
       </div>
 
-      {user?.role === 'student' && (
+      {user?.role !== 'technician' && (
         <div className="card">
           <h3>Reportar Nueva Incidencia</h3>
           <form onSubmit={handleCreateTicket}>

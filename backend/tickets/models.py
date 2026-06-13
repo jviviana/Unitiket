@@ -4,7 +4,8 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
     ROLE_CHOICES = (
-        ('student', 'Estudiante/Docente'),
+        ('student', 'Estudiante'),
+        ('teacher', 'Docente'),
         ('technician', 'Técnico'),
     )
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='student')
