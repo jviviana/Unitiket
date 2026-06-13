@@ -9,10 +9,12 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Test Backend') {
+        stage('Test Backend (con cobertura)') {
             steps {
                 sh "docker build -t ${IMAGE_NAME}:test ./backend"
-                sh "docker run --rm -e DEBUG=True ${IMAGE_NAME}:test python manage.py test tickets --verbosity=2"
+                sh "docker run --name cov_runner -e DEBUG=True ${IMAGE_NAME}:test sh -c 'coverage run manage.py test tickets --verbosity=2 && coverage report && coverage xml -o coverage.xml'"
+                sh "docker cp cov_runner:/app/coverage.xml ./backend/coverage.xml"
+                sh "docker rm cov_runner"
             }
         }
         stage('Test Frontend') {
