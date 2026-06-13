@@ -69,9 +69,25 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                script {
-                    sh "docker compose -f ./backend/docker-compose.yml --project-directory ./backend -p uniticket-grupo-3 down || true"
-                    sh "docker compose -f ./backend/docker-compose.yml --project-directory ./backend -p uniticket-grupo-3 up -d --build"
+                withCredentials([
+                    string(credentialsId: 'POSTGRES_DB', variable: 'POSTGRES_DB'),
+                    string(credentialsId: 'POSTGRES_USER', variable: 'POSTGRES_USER'),
+                    string(credentialsId: 'POSTGRES_PASSWORD', variable: 'POSTGRES_PASSWORD'),
+                    string(credentialsId: 'SECRET_KEY', variable: 'SECRET_KEY')
+                ]) {
+                    script {
+                        sh """
+                            cat > ./backend/.env <<EOF
+POSTGRES_DB=\${POSTGRES_DB}
+POSTGRES_USER=\${POSTGRES_USER}
+POSTGRES_PASSWORD=\${POSTGRES_PASSWORD}
+SECRET_KEY=\${SECRET_KEY}
+DEBUG=False
+EOF
+                        """
+                        sh "docker compose -f ./backend/docker-compose.yml --project-directory ./backend -p uniticket-grupo-3 down || true"
+                        sh "docker compose -f ./backend/docker-compose.yml --project-directory ./backend -p uniticket-grupo-3 up -d --build"
+                    }
                 }
             }
         }
