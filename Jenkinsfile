@@ -70,8 +70,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    sh "docker-compose -p uniticket-grupo-3 down || true"
-                    sh "docker-compose up -d --build"
+                    sh "docker compose -p uniticket-grupo-3 down || true"
+                    sh "docker compose up -d --build"
                 }
             }
         }
