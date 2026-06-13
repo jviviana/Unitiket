@@ -1,0 +1,13 @@
+# Configuracion de cobertura de codigo - UniTicket backend
+[run]
+source = tickets
+omit =
+    */migrations/*
+    */tests.py
+    */test_*.py
+    manage.py
+    unitiket/*
+
+[report]
+show_missing = True
+skip_covered = False
